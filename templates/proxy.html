@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<head>
+    <title>设置代理</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css">
+</head>
+
+<body>
+
+    <h1>设置代理</h1>
+    <form action="/proxy" method="post">
+    <table>
+        <tr>
+            <th>模式(http/socks5)</th>
+            <th>代理地址</th>
+            <th>代理端口</th>
+        </tr>
+        <tr>
+            <td><input name="type" value="{{ proxy.type }}"></td>
+            <td><input name="host" value="{{ proxy.host }}"></td>
+            <td><input name="port" value="{{ proxy.port }}"></td>
+        </tr>
+    </table>
+        <input type="submit" value="提交" />
+    </form>
+
+</body>

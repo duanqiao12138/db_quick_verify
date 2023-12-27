@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Vul Quick Verify</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css">
+</head>
+
+<body>
+    <h1>Vul Quick Verify</h1>
+    <button onclick="window.location.href='/proxy'">设置代理</button>
+    <h2 style="color: chartreuse;"> {{ notice }}</h2>
+    <h2>请在此处粘贴扫描结果：</h2>
+    <form id="myForm" action="/verify1" method="post">
+        <textarea name="scan_result" cols="100" rows="20"></textarea>
+        <!-- 将内容base64编码后提交 -->
+        <br>
+        <button type="submit">提交</button>
+    </form>
+
+    <script>
+        var form = document.getElementById("myForm");
+        form.addEventListener("submit", function(event) {
+          event.preventDefault(); // 阻止表单默认提交行为
+    
+          // 获取textarea的内容
+          var textarea = form.elements.scan_result;
+          var content = textarea.value;
+    
+          // 使用Base64编码
+          var base64Content = btoa(unescape(encodeURIComponent(content)));
+    
+          // 将Base64内容设置为表单数据的值
+          form.elements.scan_result.value = base64Content;
+    
+          // 提交表单
+          form.submit();
+    
+          // 或者使用下面的方式提交表单
+          // form.submit(function() {
+          //   // 请求成功后跳转到新页面
+          //   window.location.href = "new_page_url";
+          // });
+        });
+      </script>
+</body>

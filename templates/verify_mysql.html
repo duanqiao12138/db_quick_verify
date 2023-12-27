@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<head>
+    <title>连接详情</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css">
+</head>
+
+<body>
+    <h1>连接报告：</h1>
+    <p>连接信息：</p>
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>ip</th>
+            <th>端口</th>
+            <th>用户名</th>
+            <th>密码</th>
+        </tr>
+        <tr>
+            <td>{{ ip }}</td>
+            <td>{{ port }}</td>
+            <td>{{ username }}</td>
+            <td>{{ password }}</td>
+        </tr>
+    </table>
+    <p>连接结果：{{ notice }}</p>
+    {% if notice == "连接成功！" %}
+    <p>数据库版本：Mysql {{ res.version }}；系统版本：{{ res.os }} {{ res.machine }}；当前用户：{{ res.user }}；secure_file_priv值：{{ res.secure_file_priv }}</p>
+
+    {% if res.secure_file_priv == "" %}
+    <p style="color: red;">secure_file_priv值为空，可以<a href="/mysql_udf?ip={{ ip }}&port={{ port }}&u={{ username }}&p={{ password }}">尝试UDF提权</a> </p>
+
+    {% endif %}
+
+    {% if res.has_display == False %}
+    <p>此数据库只有{% for db in res.no_display %}{{ db }}     {% endfor %}库</p>
+
+    {% else %}
+
+    <p>{% for db in res.no_display %}{{ db }}     {% endfor %}库已自动省略，未列出</p>
+
+    {% for key, values in res.tables.items() %}
+    数据库：{{ key }}<br>
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>表名</th>
+            <th>行数</th>
+        </tr>
+        {% for table_name,cols in values %}
+        <tr>
+            <td>{{ table_name }}</td>
+            <td>{{ cols }}</td>
+        </tr>
+        {% endfor %}
+    </table><br>
+    {% endfor %}
+
+    {% endif %}
+    {% endif %}
+
+</body>

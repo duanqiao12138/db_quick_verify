@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<head>
+    <title>验证确认</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css">
+</head>
+
+<body>
+<div style="white-space: pre-line;">
+    <h2>[ + ]</h2>
+    {{ all_vul }}
+    <h2>以下内容将被验证：</h2>
+    <h3>MySQL:</h3>
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>序号</th>
+            <th>ip</th>
+            <th>端口</th>
+            <th>用户名</th>
+            <th>密码</th>
+            <th>验证</th>
+        </tr>
+        {% for item in mysql_vul %}
+            <tr>
+                <td>{{ loop.index0 + 1 }}</td>
+                <td>{{ item.ip }}</td>
+                <td>{{ item.port }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.password }}</td>
+                <td>
+                    <a href="/verify2?type=mysql&ip={{ item.ip }}&port={{ item.port }}&u={{ item.username }}&p={{ item.password }}">点击验证</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h3>SSH:</h3>
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>序号</th>
+            <th>ip</th>
+            <th>端口</th>
+            <th>用户名</th>
+            <th>密码</th>
+        </tr>
+        {% for item in ssh_vul %}
+            <tr>
+                <td>{{ loop.index0 + 1 }}</td>
+                <td>{{ item.ip }}</td>
+                <td>{{ item.port }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.password }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Postgres:</h3>
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>序号</th>
+            <th>ip</th>
+            <th>端口</th>
+            <th>用户名</th>
+            <th>密码</th>
+        </tr>
+        {% for item in postgresql_vul %}
+            <tr>
+                <td>{{ loop.index0 + 1 }}</td>
+                <td>{{ item.ip }}</td>
+                <td>{{ item.port }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.password }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+    <h3>Memcached:</h3>
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>序号</th>
+            <th>ip</th>
+            <th>端口</th>
+            <th>用户名</th>
+            <th>密码</th>
+        </tr>
+        {% for item in Memcached_vul %}
+            <tr>
+                <td>{{ loop.index0 + 1 }}</td>
+                <td>{{ item.ip }}</td>
+                <td>{{ item.port }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.password }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Redis:</h3>
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>序号</th>
+            <th>ip</th>
+            <th>端口</th>
+            <th>用户名</th>
+            <th>密码</th>
+            <th>备注</th>
+        </tr>
+        {% for item in redis_vul %}
+            <tr>
+                <td>{{ loop.index0 + 1 }}</td>
+                <td>{{ item.ip }}</td>
+                <td>{{ item.port }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.password }}</td>
+                <td>{{ item.other }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h3>MySQL:</h3>
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>序号</th>
+            <th>ip</th>
+            <th>端口</th>
+            <th>用户名</th>
+            <th>密码</th>
+        </tr>
+        {% for item in mysql_vul %}
+            <tr>
+                <td>{{ loop.index0 + 1 }}</td>
+                <td>{{ item.ip }}</td>
+                <td>{{ item.port }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.password }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+</body>
