@@ -3,9 +3,7 @@ import re
 import base64
 import mysql.connector
 import random
-# from geventwebsocket.handler import WebSocketHandler
-# from gevent.pywsgi import WSGIServer
-# from geventwebsocket.websocket import WebSocket
+import paramiko
 from flask_socketio import SocketIO
 from urllib.parse import urlparse, parse_qs
 
@@ -335,6 +333,23 @@ def mysql_udf(ip, port, username, password):
     print(res)
 
     return res
+
+
+@app.route('/ssh', methods=['GET'])
+def conn_ssh():
+    ip = request.args.get('ip')
+    port = int(request.args.get('port'))
+    u = request.args.get('u')
+    p = request.args.get('p')
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=ip, port=port, username=u, password=p, timeout=5)
+    stdin, stdout, stderr = ssh.exec_command("id")
+    res1 = stdout.read()
+    stdin, stdout, stderr = ssh.exec_command("hostname -I")
+    res2 = stdout.read()
+    ssh.close()
+    return '{"res1":"' + base64.b64encode(res1).decode() + '","res2":"' + base64.b64encode(res2).decode() + '"}'
 
 
 mysql_pool = {}

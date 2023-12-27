@@ -29,14 +29,16 @@
                 <td>{{ item.username }}</td>
                 <td>{{ item.password }}</td>
                 <td>
-                    <a href="/verify2?type=mysql&ip={{ item.ip }}&port={{ item.port }}&u={{ item.username }}&p={{ item.password }}">点击验证</a>
+                    <a href="/verify2?type=mysql&ip={{ item.ip }}&port={{ item.port }}&u={{ item.username }}&p={{ item.password }}"
+                       target="_blank">点击验证</a>
                 </td>
             </tr>
         {% endfor %}
     </table>
 
     <h3>SSH:</h3>
-    <table border="1" cellspacing="0">
+    <button onclick="verify_ssh()">点击开始验证</button>
+    <table id="ssh" border="1" cellspacing="0">
         <tr>
             <th>序号</th>
             <th>ip</th>
@@ -139,5 +141,95 @@
     </table>
 </div>
 
+<script>
+    var flag_ssh_verify = false;
+
+    function verify_ssh() {
+        try {
+            controller.abort();
+        }
+        catch (e) {
+        }
+
+        var table = document.getElementById("ssh");
+        var rows = table.getElementsByTagName("tr");
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+
+            // 获取行的所有单元格
+            var cells = row.getElementsByTagName("td");
+
+            // 移除多余的单元格
+            while (cells.length > 5) {
+                row.removeChild(cells[cells.length - 1]);
+            }
+        }
+        if (flag_ssh_verify === false) {
+            var newCell1 = document.createElement("th");
+            var newCell2 = document.createElement("th");
+            newCell1.textContent = "id";
+            newCell2.textContent = "hostname -I";
+
+            // 将新单元格添加到当前行
+            rows[0].appendChild(newCell1);
+            rows[0].appendChild(newCell2);
+            flag_ssh_verify = true;
+        }
+
+        // 获取表格的所有行
+        var controller = new AbortController();
+        var signal = controller.signal;
+
+        async function fetchAndProcessData() {
+            // 获取表格对象
+            var table = document.getElementById("ssh");
+
+            // 获取表格的所有行
+            var rows = table.getElementsByTagName("tr");
+
+            // 遍历每一行，从第二行开始（跳过表头）
+            for (var i = 1; i < rows.length; i++) {
+                var row = rows[i];
+
+                // 获取单元格内容
+                var ip = row.cells[1].textContent;
+                var port = row.cells[2].textContent;
+                var username = row.cells[3].textContent;
+                var password = row.cells[4].textContent;
+
+                try {
+                    // 发起 fetch 请求
+                    var response = await fetch("/ssh?ip=" + ip + "&port=" + port + "&u=" + username + "&p=" + password, {
+                        method: "GET",
+                    });
+
+                    // 处理服务器响应的数据
+                    var data = await response.text();
+                    res = JSON.parse(data);
+
+                    // 创建新的单元格
+                    var newCell1 = document.createElement("td");
+                    var newCell2 = document.createElement("td");
+                    newCell1.textContent = atob(res["res1"]);
+                    newCell2.textContent = atob(res["res2"]);
+
+                    // 将新单元格添加到当前行
+                    row.appendChild(newCell1);
+                    row.appendChild(newCell2);
+                } catch (error) {
+                    // 处理请求错误
+                    console.error(error);
+                }
+            }
+        }
+
+        fetchAndProcessData();
+    }
+
+    // 遍历每一行，从第二行开始（跳过表头）
+
+
+</script>
 
 </body>
