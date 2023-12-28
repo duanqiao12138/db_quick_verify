@@ -1,3 +1,5 @@
+import sys
+
 from flask import Flask, render_template, request, redirect
 import re
 import base64
@@ -19,11 +21,15 @@ notice = ''
 @app.route('/')
 def index():
     global notice
+    try:
+        ip = requests.get("http://myip.ipip.net/").text
+    except:
+        ip = '获取ip地址失败！'
+    tmp_notice = ''
     if notice != '':
         tmp_notice = notice
         notice = ''
-        return render_template('index.html', notice=tmp_notice, proxy=proxy_dict)
-    return render_template('index.html', proxy=proxy_dict)
+    return render_template('index.html', notice=tmp_notice, proxy=proxy_dict, ip=ip)
 
 
 @app.route('/proxy', methods=['GET', 'POST'])
@@ -35,17 +41,16 @@ def proxy():
         print(proxy_dict['type'])
         proxy_dict['host'] = request.form['host']
         proxy_dict['port'] = request.form['port']
-        if proxy_dict['type'] != 'none':
+        if proxy_dict['type'] == 'none':
             socks.set_default_proxy(None)
             socket.socket = socks.socksocket
             notice = 'Proxy setting success!'
-        elif proxy_dict['type'] != 'socks5':
+        elif proxy_dict['type'] == 'socks5':
             socks.set_default_proxy(socks.SOCKS5, proxy_dict['host'], int(proxy_dict['port']))
             socket.socket = socks.socksocket
             notice = 'Proxy setting success!'
         else:
             notice = 'Proxy setting error!'
-
         return redirect('/')
 
     elif request.method == 'GET':
@@ -142,6 +147,7 @@ def verify1():
 @app.route('/verify2', methods=['GET'])
 def verify2():
     global proxy_dict
+    print(requests.get("http://ip.de0f.cn/").text)
     if request.args.get('type') == 'mysql':
         try:
             res = mysql_conn(request.args.get('ip'), request.args.get('port'), request.args.get('u'),
@@ -415,9 +421,14 @@ def exec_mysql():
 
 
 if __name__ == '__main__':
+    # 从命令行接收端口参数
+    try:
+        port = sys.argv[1]
+    except:
+        port = 5000
     # import logging
     # logging.basicConfig(level=logging.DEBUG)
-    app.run('127.0.0.1', 5000, debug=True)
+    app.run('0.0.0.0', port, debug=True)
     # server = WSGIServer(('127.0.0.1', 5000), app, handler_class=WebSocketHandler)
     # server.serve_forever()
     # app.run()

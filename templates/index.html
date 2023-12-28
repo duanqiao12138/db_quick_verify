@@ -8,8 +8,8 @@
 
 <body>
     <h1>Vul Quick Verify</h1>
-    <h3>当前代理：{{ proxy.type }}{% if proxy.type == 'socks5' %}://{{ proxy.host }}:{{ proxy.port }}{% endif %}</h3>
-    <button onclick="window.location.href='/proxy'">设置代理</button>
+{#    <h3>当前代理：{{ proxy.type }}{% if proxy.type == 'socks5' %}://{{ proxy.host }}:{{ proxy.port }}{% endif %}</h3>#}
+{#    <button onclick="window.location.href='/proxy'">设置代理</button>#}
     <h2 style="color: chartreuse;"> {{ notice }}</h2>
     <h2>请在此处粘贴扫描结果：</h2>
     <form id="myForm" action="/verify1" method="post">
@@ -19,6 +19,7 @@
         <button type="submit">提交</button>
     </form>
 
+    <p>{{ ip }}</p>
     <script>
         var form = document.getElementById("myForm");
         form.addEventListener("submit", function(event) {
