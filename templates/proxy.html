@@ -8,21 +8,79 @@
 
 <body>
 
-    <h1>设置代理</h1>
-    <form action="/proxy" method="post">
+<h1>设置代理</h1>
+<form action="/proxy" method="post">
     <table>
         <tr>
-            <th>模式(http/socks5)</th>
-            <th>代理地址</th>
-            <th>代理端口</th>
+            <th>模式</th>
+            <th>代理地址(ip)</th>
+            <th>代理端口(port)</th>
         </tr>
         <tr>
-            <td><input name="type" value="{{ proxy.type }}"></td>
-            <td><input name="host" value="{{ proxy.host }}"></td>
-            <td><input name="port" value="{{ proxy.port }}"></td>
+            <td>
+                <select name="type" id="type">
+                </select>
+            <td><input name="host" id="host" value="{{ proxy.host }}"></td>
+            <td><input name="port" id="port" value="{{ proxy.port }}"></td>
         </tr>
     </table>
-        <input type="submit" value="提交" />
-    </form>
+    <input type="submit" value="提交"/>
+</form>
+
+<h2>代理测试</h2>
+<table>
+    <tr>
+        <th>测试地址</th>
+    </tr>
+    <tr>
+        <td><input name="url" id="test_url" value="http://myip.ipip.net/"></td>
+    </tr>
+</table>
+<textarea disabled hidden style="width: 480px; height: 17px;" id="test_result"></textarea>
+<p></p>
+<input type="submit" onclick="test_url()" value="测试"/>
+
+<script>
+    var selector_type = document.getElementById("type");
+
+    // 创建 "none" 选项
+    var noneOption = document.createElement("option");
+    noneOption.value = "none";
+    noneOption.textContent = "none";
+
+    // 创建 "socks5" 选项
+    var socks5Option = document.createElement("option");
+    socks5Option.value = "socks5";
+    socks5Option.textContent = "socks5";
+    if ("{{ proxy.type }}" === "socks5") {
+        socks5Option.selected = true;
+    } else {
+        noneOption.selected = true;
+    }
+    selector_type.appendChild(noneOption);
+    selector_type.appendChild(socks5Option);
+
+    result_area = document.getElementById("test_result");
+
+    function test_url() {
+        result_area.removeAttribute("hidden");
+        fetch("/proxy/test", {
+            method: "POST",
+            body: "type=" + document.getElementById('type').value + "&url=" + btoa(document.getElementById("test_url").value) + "&host=" + document.getElementById('host').value + "&port=" + document.getElementById('port').value,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(response => response.text())
+            .then(data => {
+                // 处理服务器响应的数据
+                result_area.value = data;
+            })
+            .catch(error => {
+                // 处理请求错误
+            });
+    }
+</script>
+
 
 </body>

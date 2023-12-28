@@ -29,8 +29,8 @@
                 <td>{{ item.username }}</td>
                 <td>{{ item.password }}</td>
                 <td>
-                    <a href="/verify2?type=mysql&ip={{ item.ip }}&port={{ item.port }}&u={{ item.username }}&p={{ item.password }}"
-                       target="_blank">点击验证</a>
+                    <a type="button" href="/verify2?type=mysql&ip={{ item.ip }}&port={{ item.port }}&u={{ item.username }}&p={{ item.password }}"
+                       target="_blank" style="text-decoration: none">点击验证</a>
                 </td>
             </tr>
         {% endfor %}

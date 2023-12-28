@@ -4,12 +4,13 @@ import base64
 import mysql.connector
 import random
 import paramiko
-from flask_socketio import SocketIO
+# from flask_socketio import SocketIO
 from urllib.parse import urlparse, parse_qs
+import socks
+import socket
+import requests
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
 
 proxy_dict = {'type': 'null', 'host': '', 'port': ''}
 notice = ''
@@ -21,8 +22,8 @@ def index():
     if notice != '':
         tmp_notice = notice
         notice = ''
-        return render_template('index.html', notice=tmp_notice)
-    return render_template('index.html')
+        return render_template('index.html', notice=tmp_notice, proxy=proxy_dict)
+    return render_template('index.html', proxy=proxy_dict)
 
 
 @app.route('/proxy', methods=['GET', 'POST'])
@@ -31,16 +32,38 @@ def proxy():
     global notice
     if request.method == 'POST':
         proxy_dict['type'] = request.form['type']
+        print(proxy_dict['type'])
         proxy_dict['host'] = request.form['host']
         proxy_dict['port'] = request.form['port']
-        if proxy_dict['type'] != 'null' or proxy_dict['type'] != 'http' or proxy_dict['type'] != 'socks5':
-            notice = 'Proxy setting error!'
-        else:
+        if proxy_dict['type'] != 'none':
+            socks.set_default_proxy(None)
+            socket.socket = socks.socksocket
             notice = 'Proxy setting success!'
+        elif proxy_dict['type'] != 'socks5':
+            socks.set_default_proxy(socks.SOCKS5, proxy_dict['host'], int(proxy_dict['port']))
+            socket.socket = socks.socksocket
+            notice = 'Proxy setting success!'
+        else:
+            notice = 'Proxy setting error!'
+
         return redirect('/')
 
     elif request.method == 'GET':
         return render_template('proxy.html', proxy=proxy_dict)
+
+
+@app.route('/proxy/test', methods=['POST'])
+def proxy_test():
+    if request.form['type'] == 'none':
+        return requests.get(base64.b64decode(request.form.get('url')).decode()).text
+    elif request.form['type'] == 'socks5':
+        proxies = {
+            'http': 'socks5://' + request.form['host'] + ':' + request.form['port'],
+            'https': 'socks5://' + request.form['host'] + ':' + request.form['port']
+        }
+        return requests.get(base64.b64decode(request.form.get('url')).decode(), proxies=proxies).text
+    else:
+        return 'Proxy setting error!'
 
 
 @app.route('/verify1', methods=['POST'])
